@@ -14,9 +14,10 @@ AC_CHECK_LIB(dl, main)
 
 #----------------------------------------------------------------------
 # libnfc Checks
-LIBNFC_REQUIRED_VERSION=1.4.0
+LIBNFC_REQUIRED_VERSION=1.7.0
 PKG_CHECK_MODULES([libnfc], [libnfc >= $LIBNFC_REQUIRED_VERSION], [], [AC_MSG_ERROR([libnfc >= $LIBNFC_REQUIRED_VERSION is mandatory.])])
 #----------------------------------------------------------------------
+
 # PAM Checks
 AC_CHECK_HEADER(security/pam_modules.h,
 		AC_DEFINE(HAVE_SECURITY_PAM_MODULES_H),

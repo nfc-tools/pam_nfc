@@ -54,10 +54,11 @@ nfcauth_get_targets (char **targets[])
     nfc_connstring devices[MAX_DEVICES];
     size_t device_count;
     size_t target_count;
-    int i;
+    size_t i;
     
-    nfc_init(NULL);
-    device_count = nfc_list_devices(NULL, devices, MAX_DEVICES);
+    nfc_context *context;
+    nfc_init(&context);
+    device_count = nfc_list_devices(context, devices, MAX_DEVICES);
 
     nfc_modulation nm = {
         .nmt = NMT_ISO14443A,
@@ -65,16 +66,17 @@ nfcauth_get_targets (char **targets[])
     };
 
     for (i = 0; i < device_count; i++) {
-        nfc_device* initiator = nfc_open (NULL, devices[i]);
+        nfc_device* initiator = nfc_open (context, devices[i]);
         if (initiator) {
             nfc_initiator_init (initiator);
             nfc_target ant[MAX_TARGET];
-
-            if ((target_count = nfc_initiator_list_passive_targets (initiator, nm, ant, MAX_TARGET)) >= 0) {
+            int res;
+            if ((res = nfc_initiator_list_passive_targets (initiator, nm, ant, MAX_TARGET)) >= 0) {
                 size_t  iTarget;
+                target_count = res;
                 for (iTarget = 0; iTarget < target_count; iTarget++) {
-                    if ((*targets)[ret] = malloc (2 * ant[iTarget].nti.nai.szUidLen + 1)) {
-                        int n;
+                    if (((*targets)[ret] = malloc (2 * ant[iTarget].nti.nai.szUidLen + 1))) {
+                        size_t n;
                         (*targets)[ret][0] = '\0';
                         for (n = 0; n < ant[iTarget].nti.nai.szUidLen; n++) {
                             sprintf ((*targets)[ret] + 2 * n, "%02x", ant[iTarget].nti.nai.abtUid[n]);
@@ -86,6 +88,6 @@ nfcauth_get_targets (char **targets[])
             nfc_close (initiator);
         }
     }
-    nfc_exit(NULL);
+    nfc_exit(context);
     return ret;
 }
