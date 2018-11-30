@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <syslog.h>
+
 #if defined(HAVE_CRYPT_H)
 #include <crypt.h>
 #endif /* HAVE_CRYPT_H */
@@ -30,23 +32,6 @@
 
 int	 nfcauth_is_authorized (const char *user, char *target);
 
-int
-nfcauth_check (void)
-{
-    struct stat conffile_fileinfo;
-
-    if (stat (PAM_NFC_FILE, &conffile_fileinfo)) {
-	return 0;
-    }
-
-    if ( ( conffile_fileinfo.st_mode & S_IWOTH )
-	    || !S_ISREG ( conffile_fileinfo.st_mode ) )
-    {
-	/* If the file is world writable or is not a normal file, return error */
-	return 0;
-    }
-    return 1;
-}
 
 int
 nfcauth_add_authorization (char *user, char *target)
@@ -68,11 +53,13 @@ nfcauth_add_authorization (char *user, char *target)
     umask (0077);
 
     if (!(config = fopen (PAM_NFC_FILE, "a")))
+
 	return 0;
 
     ret = (fprintf (config, CRED_FORMAT, user, crypt(target, CRYPT_SALT)) > 0);
     
     if (fclose (config) != 0)
+
 	return 0;
 
     /* Protect teh configuration file setting it read-only. */

@@ -69,8 +69,17 @@
 #  include <security/pam_appl.h>
 #endif /* HAVE_SECURITY_PAM_APPL_H */
 
+#if !defined(SYSCONFDIR)
+# define SYSCONFDIR "/etc"
+#endif /* !SYSCONFDIR */
+
+#if !defined(PAM_NFC_FILE)
+# define PAM_NFC_FILE SYSCONFDIR "/pam_nfc.conf"
+#endif /* !PAM_NFC_FILE */
+
+
 /* some syslogging */
-static void _pam_log ( int err, const char *format, ... )
+void pam_log ( int err, const char *format, ... )
 {
 	va_list args;
 	va_start ( args, format );
@@ -79,6 +88,33 @@ static void _pam_log ( int err, const char *format, ... )
 	va_end ( args );
 	closelog();
 }
+
+int
+nfcauth_check (void)
+{
+    struct stat conffile_fileinfo;
+pam_log ( LOG_INFO, "using configfile %s", PAM_NFC_FILE);
+    if (stat (PAM_NFC_FILE, &conffile_fileinfo)) {
+pam_log ( LOG_ERR, "configfile %s not found", PAM_NFC_FILE);
+printf("1");
+	return 0;
+    }
+
+    if ( ( conffile_fileinfo.st_mode & S_IWOTH )
+	    || !S_ISREG ( conffile_fileinfo.st_mode ) )
+    {
+	/* If the file is world writable or is not a normal file, return error */
+    if ( conffile_fileinfo.st_mode & S_IWOTH )
+pam_log ( LOG_ERR, "configfile %s world writeable - i wont touch it!", PAM_NFC_FILE);
+printf("2");
+	    if(!S_ISREG ( conffile_fileinfo.st_mode ) )
+pam_log ( LOG_ERR, "configfile %s not a normal file", PAM_NFC_FILE);
+printf("3");
+	return 0;
+    }
+    return 1;
+}
+
 
 /* --- authentication management functions (only) --- */
 
@@ -95,16 +131,17 @@ int pam_sm_authenticate ( pam_handle_t *pamh,int flags,int argc
 	retval = pam_get_user ( pamh, &user, NULL );
 	if ( retval != PAM_SUCCESS )
 	{
-		_pam_log ( LOG_ERR, "get user returned error: %s",
+		pam_log ( LOG_ERR, "get user returned error: %s",
 		           pam_strerror ( pamh,retval ) );
 		return retval;
 	}
 	if ( user == NULL || *user == '\0' )
 	{
-		_pam_log ( LOG_ERR, "username not known" );
+		pam_log ( LOG_ERR, "username not known" );
 		return retval;
 	}
-
+	pam_log ( LOG_INFO, "authenticating user: %s",
+		           user );
 	if (!(nfcauth_check ())) return PAM_SERVICE_ERR;
 
 	return (nfcauth_authorize (user)) ? PAM_SUCCESS : PAM_AUTH_ERR;
