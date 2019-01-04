@@ -1,4 +1,4 @@
-#README for pam_nfc
+# README for pam_nfc
 
 <!---
 [![start with why](https://img.shields.io/badge/start%20with-why%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
@@ -17,7 +17,7 @@ pam_nfc is a NFC-based PAM authentification module.
 Using pam_nfc, you can use NFC (Near Field Communication) cards / tags to
 autohrise users into PAM (Pluggable Authentication Modules).
 
-#Security consideration
+# Security consideration
 
 Since tag IDs cannot be trusted, you SHOULD not only rely on them to grant
 access to the machine to users.  You SHOULD only consider this PAM module as a
