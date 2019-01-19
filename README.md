@@ -11,6 +11,7 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/elbosso/pam_nfc/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/elbosso/pam_nfc.svg)](https://GitHub.com/elbosso/pam_nfc/graphs/contributors/)
 [![Github All Releases](https://img.shields.io/github/downloads/elbosso/pam_nfc/total.svg)](https://github.com/elbosso/pam_nfc)
+[![Website elbosso.github.io](https://img.shields.io/website-up-down-green-red/https/elbosso.github.io.svg)](https://elbosso.github.io/)
 
 pam_nfc is a NFC-based PAM authentification module.
 
