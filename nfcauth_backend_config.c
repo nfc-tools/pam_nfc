@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <syslog.h>
+
 #if defined(HAVE_CRYPT_H)
 #include <crypt.h>
 #endif /* HAVE_CRYPT_H */
@@ -72,11 +74,13 @@ nfcauth_add_authorization (char *user, char *target)
     umask (0077);
 
     if (!(config = fopen (PAM_NFC_FILE, "a")))
+
 	return 0;
 
     ret = (fprintf (config, CRED_FORMAT, user, crypt(target, CRYPT_SALT)) > 0);
     
     if (fclose (config) != 0)
+
 	return 0;
 
     /* Protect teh configuration file setting it read-only. */
