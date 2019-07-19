@@ -36,6 +36,8 @@ nfcauth_check (void)
     struct stat conffile_fileinfo;
 
     if (stat (PAM_NFC_FILE, &conffile_fileinfo)) {
+//printf("Welcome 1 pam_nfc %s\n", PAM_NFC_FILE);
+
 	return 0;
     }
 
@@ -43,6 +45,8 @@ nfcauth_check (void)
 	    || !S_ISREG ( conffile_fileinfo.st_mode ) )
     {
 	/* If the file is world writable or is not a normal file, return error */
+//printf("Welcome 2 pam_nfc %s\n", PAM_NFC_FILE);
+
 	return 0;
     }
     return 1;
@@ -89,11 +93,13 @@ nfcauth_is_authorized (const char *user, char *target)
 
     char needle[BUFSIZ];
 
+    //printf("checking %s %s ,,,\n",user,target);
     snprintf (needle, BUFSIZ, CRED_FORMAT, user, crypt(target, CRYPT_SALT));
 
     if ((config = fopen(PAM_NFC_FILE, "r"))) {
 	char buffer[BUFSIZ];
 	while (!found && fgets (buffer, BUFSIZ, config)) {
+	//printf("comparing %s to %s ...\n",needle,buffer);
 	    if (strcmp (buffer, needle) == 0)
 		found = 1;
 	}

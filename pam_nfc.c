@@ -93,6 +93,7 @@ int pam_sm_authenticate ( pam_handle_t *pamh,int flags,int argc
 	const char *user = NULL;
 
 	retval = pam_get_user ( pamh, &user, NULL );
+
 	if ( retval != PAM_SUCCESS )
 	{
 		_pam_log ( LOG_ERR, "get user returned error: %s",
@@ -105,8 +106,12 @@ int pam_sm_authenticate ( pam_handle_t *pamh,int flags,int argc
 		return retval;
 	}
 
-	if (!(nfcauth_check ())) return PAM_SERVICE_ERR;
+	if (!(nfcauth_check ()))
+{
+//printf("Welcome pam_nfc %s\n", user);
 
+ return PAM_SERVICE_ERR;
+}
 	return (nfcauth_authorize (user)) ? PAM_SUCCESS : PAM_AUTH_ERR;
 }
 
