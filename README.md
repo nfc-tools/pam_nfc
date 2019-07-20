@@ -27,3 +27,14 @@ convenient way for a user to tell his own machine who he is.
 Basically, the NFC reader is physically connected to the computer, so if an
 user has a physical access to the NFC intiator, he also has physical access to
 the computer, and thus strong authentification is already of no luck.
+
+# Security - or not?
+
+My own changes here are not meant to increase the security in any way: I simply
+tried to use this module after motorola shipped their last software upgrade. This
+did change the NFC UID from a static value to a dynamic one (with 08 as first byte). So now
+it changes the ID with every read and thus is no longer usable for authentication. 
+I therefore searched for a different aspect or property that does not change with every read and
+i decided on ATS forthe time being. This does not make this more secure though, if anything it makes it slightly less secure. 
+
+So i reiterate what the original author wrote above... 
