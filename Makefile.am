@@ -32,6 +32,6 @@ pam_nfc_add_SOURCES = \
         pam-nfc-add.c
     
 pam_nfc_add_LDADD = \
-	-lnfcauth
+	libnfcauth.la
 
 EXTRA_DIST = nfcauth.h
