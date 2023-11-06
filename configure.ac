@@ -5,6 +5,10 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
+m4_ifndef([PKG_PROG_PKG_CONFIG],
+	  [m4_fatal([Could not locate the pkg-config autoconf macros])]
+)
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
