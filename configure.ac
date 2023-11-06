@@ -55,7 +55,7 @@ LIBS=$old_LIBS
 
 #----------------------------------------------------------------------
 # PAM Module Directory
-AC_ARG_WITH([pam-dir], [AC_HELP_STRING([--with-pam-dir=DIR],
+AC_ARG_WITH([pam-dir], [AS_HELP_STRING([--with-pam-dir=DIR],
 	    [directory to install pam module in])], [],
 	    [with_pam_dir='${prefix}/lib/security'])
 PAM_DEST_DIR="$with_pam_dir"
@@ -70,7 +70,7 @@ AC_CHECK_HEADERS(sys/perm.h, AC_DEFINE(HAVE_SYS_PERM_H))
 
 #----------------------------------------------------------------------
 # Backend
-AC_ARG_WITH([backend], [AC_HELP_STRING([--with-backend=BACKEND],
+AC_ARG_WITH([backend], [AS_HELP_STRING([--with-backend=BACKEND],
 	    [Backend to use for authorization storage])], [],
 	    [with_backend='config'])
 case "$with_backend" in
