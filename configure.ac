@@ -40,17 +40,17 @@ AC_CHECK_HEADER(security/openpam.h,
 		have_security_openpam=no,
 		[pam_types.h])
 
-if test "$have_security_pam_modules" = "no" -a \
+AS_IF([test "$have_security_pam_modules" = "no" -a \
 	"$have_security__pam_macros" = "no" -a \
 	"$have_security_pam_appl" = "no" -a \
-	"$have_security_openpam" = "no"; then
-	AC_MSG_ERROR("The PAM headers are missing")
-fi
+	"$have_security_openpam" = "no"],
+	[AC_MSG_ERROR("The PAM headers are missing")]
+)
 old_LIBS=$LIBS
 AC_CHECK_LIB(pam, pam_start, have_pam=yes, have_pam=no)
-if test "$have_pam" = "no"; then
-	AC_MSG_ERROR("The PAM library is missing")
-fi
+AS_IF([test "$have_pam" = "no"],
+	[AC_MSG_ERROR("The PAM library is missing")]
+)
 LIBS=$old_LIBS
 
 #----------------------------------------------------------------------
@@ -73,14 +73,10 @@ AC_CHECK_HEADERS(sys/perm.h, AC_DEFINE(HAVE_SYS_PERM_H))
 AC_ARG_WITH([backend], [AS_HELP_STRING([--with-backend=BACKEND],
 	    [Backend to use for authorization storage])], [],
 	    [with_backend='config'])
-case "$with_backend" in
-config)
-	AC_DEFINE(PAM_NFC_BACKEND_CONFIG)
-	;;
-*)
-	AC_ERROR(Unknown backend '$with_backend'.)
-	;;
-esac
+AS_CASE(["$with_backend"],
+	[config], [AC_DEFINE(PAM_NFC_BACKEND_CONFIG)],
+	[AC_ERROR(Unknown backend '$with_backend'.)]
+)
 
 # --enable-debug support (default:no)
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Debug flags]),[enable_debug=$enableval],[enable_debug="no"])
@@ -88,10 +84,9 @@ AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Debug flags]),[enable_deb
 AC_MSG_CHECKING(for debug flag)
 AC_MSG_RESULT($enable_debug)
  
-if test x"$enable_debug" = "xyes"
-then
-  CFLAGS="$CFLAGS -g3 -Wall -DDEBUG -pedantic"
-fi
+AS_IF([test x"$enable_debug" = "xyes"],
+  [CFLAGS="$CFLAGS -g3 -Wall -DDEBUG -pedantic"]
+)
 AC_SUBST([DEBUG_CFLAGS])
 
 AC_OUTPUT(Makefile)
