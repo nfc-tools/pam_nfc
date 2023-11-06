@@ -35,3 +35,5 @@ pam_nfc_add_LDADD = \
 	libnfcauth.la
 
 EXTRA_DIST = nfcauth.h
+
+pam_nfc.la: libnfcauth.la
