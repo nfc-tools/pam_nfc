@@ -5,6 +5,10 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
+m4_ifndef([PKG_PROG_PKG_CONFIG],
+	  [m4_fatal([Could not locate the pkg-config autoconf macros])]
+)
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
@@ -36,22 +40,22 @@ AC_CHECK_HEADER(security/openpam.h,
 		have_security_openpam=no,
 		[pam_types.h])
 
-if test "$have_security_pam_modules" = "no" -a \
+AS_IF([test "$have_security_pam_modules" = "no" -a \
 	"$have_security__pam_macros" = "no" -a \
 	"$have_security_pam_appl" = "no" -a \
-	"$have_security_openpam" = "no"; then
-	AC_MSG_ERROR("The PAM headers are missing")
-fi
+	"$have_security_openpam" = "no"],
+	[AC_MSG_ERROR("The PAM headers are missing")]
+)
 old_LIBS=$LIBS
 AC_CHECK_LIB(pam, pam_start, have_pam=yes, have_pam=no)
-if test "$have_pam" = "no"; then
-	AC_MSG_ERROR("The PAM library is missing")
-fi
+AS_IF([test "$have_pam" = "no"],
+	[AC_MSG_ERROR("The PAM library is missing")]
+)
 LIBS=$old_LIBS
 
 #----------------------------------------------------------------------
 # PAM Module Directory
-AC_ARG_WITH([pam-dir], [AC_HELP_STRING([--with-pam-dir=DIR],
+AC_ARG_WITH([pam-dir], [AS_HELP_STRING([--with-pam-dir=DIR],
 	    [directory to install pam module in])], [],
 	    [with_pam_dir='${prefix}/lib/security'])
 PAM_DEST_DIR="$with_pam_dir"
@@ -66,17 +70,13 @@ AC_CHECK_HEADERS(sys/perm.h, AC_DEFINE(HAVE_SYS_PERM_H))
 
 #----------------------------------------------------------------------
 # Backend
-AC_ARG_WITH([backend], [AC_HELP_STRING([--with-backend=BACKEND],
+AC_ARG_WITH([backend], [AS_HELP_STRING([--with-backend=BACKEND],
 	    [Backend to use for authorization storage])], [],
 	    [with_backend='config'])
-case "$with_backend" in
-config)
-	AC_DEFINE(PAM_NFC_BACKEND_CONFIG)
-	;;
-*)
-	AC_ERROR(Unknown backend '$with_backend'.)
-	;;
-esac
+AS_CASE(["$with_backend"],
+	[config], [AC_DEFINE(PAM_NFC_BACKEND_CONFIG)],
+	[AC_ERROR(Unknown backend '$with_backend'.)]
+)
 
 # --enable-debug support (default:no)
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Debug flags]),[enable_debug=$enableval],[enable_debug="no"])
@@ -84,10 +84,9 @@ AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Debug flags]),[enable_deb
 AC_MSG_CHECKING(for debug flag)
 AC_MSG_RESULT($enable_debug)
  
-if test x"$enable_debug" = "xyes"
-then
-  CFLAGS="$CFLAGS -g3 -Wall -DDEBUG -pedantic"
-fi
+AS_IF([test x"$enable_debug" = "xyes"],
+  [CFLAGS="$CFLAGS -g3 -Wall -DDEBUG -pedantic"]
+)
 AC_SUBST([DEBUG_CFLAGS])
 
 AC_OUTPUT(Makefile)
